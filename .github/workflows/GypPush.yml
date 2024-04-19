@@ -16,7 +16,7 @@ jobs :
       fail-fast : false
       matrix :
         os : [ ubuntu-latest, windows-latest, macos-latest ]
-        node-version : [ 14.x ]
+        node-version : [ 20.x ]
     if : "!startsWith( github.event.head_commit.message, 'version' ) && !startsWith( github.event.head_commit.message, '.' )"
     runs-on : ${{ matrix.os }}
     steps :
@@ -27,33 +27,26 @@ jobs :
         git config --global user.name "Testing"
         git config --global pull.rebase false
         git config --global init.defaultBranch master
-    - uses : actions/checkout@v2
+    - uses : actions/checkout@v4
     - name : ${{ matrix.node-version }}
-      uses : Wandalen/wretry.action@v1.0.15
+      uses : Wandalen/wretry.action/post@master
       with :
-        action : actions/setup-node@v1
+        action : actions/setup-node@v4
         with : |
           node-version : ${{ matrix.node-version }}
         attempt_limit : 3
         attempt_delay: 1000
-    - name : Save npm version
-      id : getnpmver
-      run : |
-        echo "::set-output name=npmver::$(npm -v)"
-    - name : Update npm if current version is 6
-      if : "startsWith( steps.getnpmver.outputs.npmver, '6.' )"
-      run : npm install -g npm@latest-6
     - name : Update node-gyp
       if: ${{ matrix.os == 'windows-latest' }}
       run : |
-        npm install --global node-gyp@9.0.0
+        npm install --global node-gyp@10.1.0
         npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
     - run : npm run clean
     - run : npm install
     - run : npm list
       continue-on-error : true
     - name : Build binary module
-      uses : Wandalen/wretry.action@v1.0.15
+      uses : Wandalen/wretry.action/main@master
       with :
         command : npm run node-pre-gyp-build
         attempt_limit : 3
