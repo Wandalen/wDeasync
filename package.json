@@ -1,6 +1,6 @@
 {
   "name": "wdeasync",
-  "version": "0.1.119",
+  "version": "0.1.120",
   "description": "Turns async function into sync via JavaScript wrapper of Node event loop",
   "main": "proto/wtools/amid/deasync/Main.ss",
   "author": "Kostiantyn Wandalen <wandalen@obox.systems>",
